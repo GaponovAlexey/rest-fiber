@@ -1,17 +1,21 @@
 package main
 
 import (
-    "log"
+	"log"
 
-    "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/basicauth"
 )
 
 func main() {
-    app := fiber.New()
+	app := fiber.New()
 
-    app.Get("/", func (c *fiber.Ctx) error {
-        return c.SendString("Hello, World!")
-    })
+	app.Use(basicauth.New(basicauth.Config{
+    Users: map[string]string{
+        "john":  "doe",
+        "admin": "1",
+    },
+}))
 
-    log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":3000"))
 }
