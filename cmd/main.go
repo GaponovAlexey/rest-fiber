@@ -1,21 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Use(basicauth.New(basicauth.Config{
-    Users: map[string]string{
-        "john":  "doe",
-        "admin": "1",
-    },
-}))
+	app.Use("/", func(c *fiber.Ctx) error {
+		msg := fmt.Sprintf("💸 From: %s, To: %s", c.Params("from"), c.Params("to"))
+		return c.SendString(msg) // => ✋ register
+	})
 
 	log.Fatal(app.Listen(":3000"))
 }
