@@ -1,21 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	app := fiber.New()
-
-	app.Use(basicauth.New(basicauth.Config{
-    Users: map[string]string{
-        "john":  "doe",
-        "admin": "1",
-    },
-}))
-
-	log.Fatal(app.Listen(":3000"))
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		 form, _ := c.MultipartForm()
+		 files := form.File["upload[]"]
+ 
+		 for _, file := range files {
+			 log.Println(file.Filename)
+			 c.SaveUploadedFile(file, dst)
+		 }
+		 c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+	})
+	log.Fatal(r.Run(":3000"))
 }
