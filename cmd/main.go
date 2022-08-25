@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 	"log"
-
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 )
 
 func main() {
-	app := fiber.New()
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		form, _ := c.MultipartForm()
+		files := form.File["upload[]"]
 
-	app.Use("/", func(c *fiber.Ctx) error {
-		msg := fmt.Sprintf("💸 From: %s, To: %s", c.Params("from"), c.Params("to"))
-		return c.SendString(msg) // => ✋ register
+		for _, file := range files {
+			log.Println(file.Filename)
+			c.SaveUploadedFile(file, dst)
+		}
+		c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
 	})
-
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(r.Run(":3000"))
 }
